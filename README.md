@@ -10,17 +10,13 @@ Installing and running Datasette.
 
 - Python (v3.9+)
 - SQLite
-- pip
-
-Optional:
-- virtualenv
 
 ### Project setup
 
 Create and activate your virtual environment:
 
-    virtualenv .env --prompt="(idiomsdb) "
-    source .env/bin/activate
+    python3 -m venv .venv --prompt="(idiomsdb) "
+    source .venv/bin/activate
 
 Install Datasette dependencies:
 
@@ -34,7 +30,7 @@ Alternatively, download [idioms.db](https://dutchdialectidioms.uu.nl/idioms.db) 
 
 ### Running Datasette
 
-    source .env/bin/activate
+    source .venv/bin/activate
     datasette serve .
 
 ## License
