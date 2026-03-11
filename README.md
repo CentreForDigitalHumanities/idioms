@@ -8,7 +8,7 @@ Installing and running Datasette.
 
 ### Prerequisites
 
-- Python (v3.9+)
+- Python (v3.10+)
 - SQLite
 
 ### Project setup
