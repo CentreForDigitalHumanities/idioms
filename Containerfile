@@ -1,4 +1,4 @@
-FROM docker.io/library/python:3.14-slim AS base
+FROM docker.io/library/python:3.14-slim AS python-base
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -8,11 +8,23 @@ WORKDIR /app
 
 RUN addgroup --system app && adduser --system --ingroup app app
 
+FROM python-base AS db-build
+
+COPY scripts/create-db.py ./scripts/create-db.py
+COPY data/csv ./data/csv
+COPY data/conversion/sql-create-tables.sql ./data/conversion/sql-create-tables.sql
+COPY data/conversion/sql-create-fts.sql ./data/conversion/sql-create-fts.sql
+
+RUN python scripts/create-db.py
+
+FROM python-base AS base
+
 COPY requirements.txt requirements-prod.txt ./
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY --chown=app:app idioms.db metadata.json ./
+COPY --from=db-build --chown=app:app /app/idioms.db ./idioms.db
+COPY --chown=app:app metadata.json ./
 COPY --chown=app:app plugins ./plugins
 COPY --chown=app:app static ./static
 COPY --chown=app:app templates ./templates

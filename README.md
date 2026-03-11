@@ -37,6 +37,7 @@ Alternatively, download [idioms.db](https://dutchdialectidioms.uu.nl/idioms.db) 
 ### 2. Container image
 
 The repository includes a multi-stage `Containerfile` (compatible with Docker) for building either a local image with the base dependencies from `requirements.txt`, or a production image that adds `requirements-prod.txt`.
+During the image build, `scripts/create-db.py` is run against the tracked `data/` sources so `idioms.db` is generated inside the build and baked into the final image.
 
 Build the local or production image with Podman or Docker (substitute `podman` with `docker`):
 
