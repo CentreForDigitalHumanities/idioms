@@ -17,8 +17,21 @@ COPY --chown=app:app plugins ./plugins
 COPY --chown=app:app static ./static
 COPY --chown=app:app templates ./templates
 
+# https://docs.datasette.io/en/stable/performance.html#using-datasette-inspect
+RUN datasette inspect idioms.db --inspect-file inspect-data.json
+
 USER app
 
 EXPOSE 8001
 
-CMD ["datasette", "gunicorn", "--immutable", "idioms.db", "--host", "0.0.0.0", "--port", "8001", "--workers", "4", "--metadata", "metadata.json", "--template-dir", "templates", "--plugins-dir", "plugins", "--static", "static:static"]
+CMD exec datasette gunicorn \
+    --immutable idioms.db \
+    --inspect-file inspect-data.json \
+    --host 0.0.0.0 \
+    --port 8001 \
+    --workers 4 \
+    --metadata metadata.json \
+    --template-dir templates \
+    --plugins-dir plugins \
+    --static static:static \
+    --setting default_cache_ttl 60
