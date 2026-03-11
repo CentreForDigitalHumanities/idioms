@@ -19,7 +19,7 @@ Create and activate your virtual environment:
     python3 -m venv .venv --prompt="(idiomsdb) "
     source .venv/bin/activate
 
-Install Datasette dependencies:
+Install base Datasette dependencies:
 
     pip install -r requirements.txt
 
@@ -36,17 +36,22 @@ Alternatively, download [idioms.db](https://dutchdialectidioms.uu.nl/idioms.db) 
 
 ### 2. Container image
 
-The repository includes a `Containerfile` (compatible with Docker) for building a self-contained image with Python 3.14, the pinned dependencies from `requirements.txt`, and the checked-in `idioms.db` database.
+The repository includes a multi-stage `Containerfile` (compatible with Docker) for building either a local image with the base dependencies from `requirements.txt`, or a production image that adds `requirements-prod.txt`.
 
-Build the image with Podman or Docker:
+Build the local or production image with Podman or Docker (substitute `podman` with `docker`):
 
-    podman build -t idioms:local -f Containerfile .
-    docker build -t idioms:local -f Containerfile .
+```sh
+# Local
+podman build --target local -t idioms:local -f Containerfile .
+# Production
+podman build --target prod -t idioms:prod -f Containerfile .
+```
 
-Run the app locally:
+Run the app:
 
-    podman run --rm -p 8001:8001 idioms:local
-    docker run --rm -p 8001:8001 idioms:local
+```sh
+podman run --rm -p 8001:8001 idioms:local
+```
 
 The app will be available at <http://127.0.0.1:8001/>.
 
