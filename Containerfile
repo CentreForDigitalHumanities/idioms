@@ -16,6 +16,7 @@ COPY --chown=app:app idioms.db metadata.json ./
 COPY --chown=app:app plugins ./plugins
 COPY --chown=app:app static ./static
 COPY --chown=app:app templates ./templates
+RUN chown app:app /app
 
 USER app
 
