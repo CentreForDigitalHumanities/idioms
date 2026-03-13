@@ -2,22 +2,24 @@
 
 This repository contains a [Datasette](https://datasette.io/) app for serving the [Database of Dutch Dialect Idioms](https://dutchdialectidioms.uu.nl/). It preserves the data structures of the now-retired original project database, and includes the data in TSV format.
 
-## Datasette
+## Installation
 
-Installing and running Datasette.
+Datasette can be installed and run directly using Python, as well as via a Podman/Docker image.
 
-### Prerequisites
+### 1. Local Python install
+
+#### Prerequisites
 
 - Python (v3.10+)
 
-### Project setup
+#### Virtual environment
 
 Create and activate your virtual environment:
 
     python3 -m venv .venv --prompt="(idiomsdb) "
     source .venv/bin/activate
 
-Install Datasette dependencies:
+Install base Datasette dependencies:
 
     pip install -r requirements.txt
 
@@ -27,10 +29,32 @@ Import the data into a SQLite database:
 
 Alternatively, download [idioms.db](https://dutchdialectidioms.uu.nl/idioms.db) and place it in the root directory of the project.
 
-### Running Datasette
+#### Running Datasette
 
     source .venv/bin/activate
     datasette serve .
+
+### 2. Container image
+
+The repository includes a multi-stage `Containerfile` (compatible with Docker) for building either a local image with the base dependencies from `requirements.txt`, or a production image that adds `requirements-prod.txt`.
+During the image build, `scripts/create-db.py` is run against the tracked `data/` sources so `idioms.db` is generated inside the build and baked into the final image.
+
+Build the local or production image with Podman or Docker (substitute `podman` with `docker`):
+
+```sh
+# Local
+podman build --target local -t idioms:local -f Containerfile .
+# Production
+podman build --target prod -t idioms:prod -f Containerfile .
+```
+
+Run the app:
+
+```sh
+podman run --rm -p 8001:8001 idioms:local
+```
+
+The app will be available at <http://127.0.0.1:8001/>.
 
 ## License
 

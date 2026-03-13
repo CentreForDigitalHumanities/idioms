@@ -1,0 +1,14 @@
+.git
+.github
+.idea
+.pytest_cache
+.venv
+.vscode
+__pycache__/
+tests/
+.env
+.DS_Store
+idioms.db
+data/conversion/docker-compose.yml
+data/conversion/requirements.in
+data/conversion/requirements.txt
