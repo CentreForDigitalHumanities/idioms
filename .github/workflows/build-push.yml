@@ -1,0 +1,64 @@
+# This workflow will build container images for specific cases and push them in the container registry
+
+name: IdiomsDB-build-push
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+        - 'develop'
+        - 'main'
+        - 'feature/**'
+        - 'bugfix/**'
+        - 'hotfix/**'
+        - 'release/**'
+    # This is used to run on releases (which are git tags under the hood)
+    tags:
+      - '*'
+    paths-ignore:
+      - 'README.md'
+  # CI aiming to help reviewing PRs
+  pull_request:
+    branches:
+      - 'main'
+      - 'develop'
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    steps:
+    -
+      name: Checkout code
+      uses: actions/checkout@v4
+    -
+      name: Login to GitHub Container Registry
+      uses: docker/login-action@v3 # this action does it securely rather than using docker login -u <user> -p <pass/token>
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    -
+      name: Build and Push
+      run: |
+        docker build -f Containerfile  --target local --tag ghcr.io/centrefordigitalhumanities/idioms:${{ github.sha }} .
+        docker push ghcr.io/centrefordigitalhumanities/idioms:${{ github.sha }}
+        # ${{ github.ref_name }} will be: the name of the current branch OR git tag OR pull request
+        docker tag ghcr.io/centrefordigitalhumanities/idioms:${{ github.sha }} ghcr.io/centrefordigitalhumanities/idioms:${{ github.ref_name }}
+        docker push ghcr.io/centrefordigitalhumanities/idioms:${{ github.ref_name }}
+
+  delete-untagged-images:
+    runs-on: ubuntu-latest
+    needs: build-push
+    steps:
+    -
+      name: Package/Container Cleanup action in ghcr.io
+      uses: dataaxiom/ghcr-cleanup-action@v1
+      with:
+        delete-untagged: true
+        exclude-tags: v*
+        keep-n-tagged: 3
+        # dry-run: true
+        # older-than: 1 year
