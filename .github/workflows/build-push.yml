@@ -1,6 +1,6 @@
 # This workflow will build container images for specific cases and push them in the container registry
 
-name: IdiomsDB-build-push
+name: IdiomsDB-build-push-housekeep
 
 on:
   workflow_dispatch:
@@ -58,6 +58,6 @@ jobs:
       with:
         delete-untagged: true
         exclude-tags: v*
-        keep-n-tagged: 3
+        keep-n-tagged: 12
         # dry-run: true
         # older-than: 1 year
