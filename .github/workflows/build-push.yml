@@ -44,8 +44,9 @@ jobs:
         docker build -f Containerfile  --target local --tag ghcr.io/centrefordigitalhumanities/idioms:${{ github.sha }} .
         docker push ghcr.io/centrefordigitalhumanities/idioms:${{ github.sha }}
         # ${{ github.ref_name }} will be: the name of the current branch OR git tag OR pull request
-        docker tag ghcr.io/centrefordigitalhumanities/idioms:${{ github.sha }} ghcr.io/centrefordigitalhumanities/idioms:${{ github.ref_name }}
-        docker push ghcr.io/centrefordigitalhumanities/idioms:${{ github.ref_name }}
+        REF_NOSLASH=$(echo "${{ github.ref_name }}" | tr / _)
+        docker tag ghcr.io/centrefordigitalhumanities/idioms:${{ github.sha }} ghcr.io/centrefordigitalhumanities/idioms:$REF_NOSLASH
+        docker push ghcr.io/centrefordigitalhumanities/idioms:$REF_NOSLASH
 
   delete-untagged-images:
     runs-on: ubuntu-latest
