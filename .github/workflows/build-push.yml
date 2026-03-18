@@ -1,4 +1,4 @@
-# This workflow will build container images for specific cases and push them in the container registry
+# This workflow builds container images for specific cases and pushes them in the container registry
 
 name: IdiomsDB-build-push-housekeep
 
