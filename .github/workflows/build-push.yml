@@ -15,8 +15,6 @@ on:
     # This is used to run on releases (which are git tags under the hood)
     tags:
       - '*'
-    paths-ignore:
-      - 'README.md'
   # CI aiming to help reviewing PRs
   pull_request:
     branches:
