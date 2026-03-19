@@ -1,0 +1,53 @@
+# This workflow builds container images for specific cases and pushes them in the container registry
+
+name: IdiomsDB-build-push-prod
+
+on:
+  push:
+    branches:
+        - 'main'
+    # This is used to run on releases (which are git tags under the hood)
+    tags:
+      - '*'
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build-push-verify:
+    runs-on: ubuntu-latest
+    steps:
+    -
+      name: Checkout code
+      uses: actions/checkout@v4
+    -
+      name: Login to GitHub Container Registry
+      uses: docker/login-action@v3 # this action does it securely rather than using docker login -u <user> -p <pass/token>
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    -
+      name: Build and Push
+      run: |
+        docker build -f Containerfile  --target prod --tag ghcr.io/centrefordigitalhumanities/idioms:${{ github.sha }} .
+        docker push ghcr.io/centrefordigitalhumanities/idioms:${{ github.sha }}
+        # ${{ github.ref_name }} will be: the name of the current branch OR git tag OR pull request
+        docker tag ghcr.io/centrefordigitalhumanities/idioms:${{ github.sha }} ghcr.io/centrefordigitalhumanities/idioms:${{ github.ref_name }}
+        docker push ghcr.io/centrefordigitalhumanities/idioms:${{ github.ref_name }}
+    -
+      name: Verify non-root
+      run: |
+        docker pull ghcr.io/centrefordigitalhumanities/idioms:${{ github.ref_name }}
+        set +e
+        timeout 7 docker run --rm -p 8001:8001 -u 1000:0 ghcr.io/centrefordigitalhumanities/idioms:${{ github.ref_name }}
+        if [ $(echo $?) -eq 124 ]; then
+          echo "Successfully timed out after 7 secs."
+        else
+          echo "Error with docker run."
+        fi
+    -
+      name: Release latest
+      run: |
+        docker tag ghcr.io/centrefordigitalhumanities/idioms:${{ github.ref_name }} ghcr.io/centrefordigitalhumanities/idioms:latest
+        docker push ghcr.io/centrefordigitalhumanities/idioms:latest
