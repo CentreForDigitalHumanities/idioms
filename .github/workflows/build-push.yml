@@ -65,7 +65,7 @@ jobs:
       uses: dataaxiom/ghcr-cleanup-action@v1
       with:
         delete-untagged: true
-        exclude-tags: v*
+        exclude-tags: v*, main, develop
         keep-n-tagged: 12
         # dry-run: true
         # older-than: 1 year
