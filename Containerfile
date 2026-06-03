@@ -28,7 +28,9 @@ COPY --chown=app:app metadata.json ./
 COPY --chown=app:app plugins ./plugins
 COPY --chown=app:app static ./static
 COPY --chown=app:app templates ./templates
-RUN chown app:app /app
+# We actually need the group 0 with rwx so that it can run in Openshift for the unprivileged user
+RUN chown -R app:0 /app
+RUN chmod g+rwx /app
 
 USER app
 
@@ -62,3 +64,8 @@ CMD exec datasette gunicorn \
     --plugins-dir plugins \
     --static static:static \
     --setting default_cache_ttl 60
+
+# Sample runs for local and prod, unprivileged user and port simulated
+# docker run --rm --name idioms -p 8001:8001 -u 1000:0 idioms:local
+# docker run --rm --name idioms --env-file ./env.prod -p 8001:8001 -u 1000:0 idioms:prod
+# docker exec -it idioms /bin/bash
