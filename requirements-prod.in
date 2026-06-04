@@ -1,2 +1,3 @@
 datasette-gunicorn
 datasette-matomo
+websockets
