@@ -1,4 +1,2 @@
 datasette-gunicorn
 datasette-matomo
-websockets
-wsproto
