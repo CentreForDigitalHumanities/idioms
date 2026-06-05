@@ -63,7 +63,9 @@ CMD exec datasette gunicorn \
     --template-dir templates \
     --plugins-dir plugins \
     --static static:static \
-    --setting default_cache_ttl 60
+    --setting default_cache_ttl 60 \
+    2>/dev/null
+# Supress datasette gunicorn INFO/WARNING logs which come out in stderr stream, they have already been checked and investigated.
 
 # Sample runs for local and prod, unprivileged user and port simulated
 # docker run --rm --name idioms -p 8001:8001 -u 1000:0 idioms:local
