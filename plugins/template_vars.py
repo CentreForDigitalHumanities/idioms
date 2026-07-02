@@ -1,8 +1,22 @@
 from collections import defaultdict
+from functools import lru_cache
+from pathlib import Path
 import re
 
 from datasette import hookimpl
-from datasette.utils import sqlite3
+from datasette.utils import parse_metadata, sqlite3
+
+
+APP_ROOT = Path(__file__).resolve().parents[1]
+APP_CITATION_PATH = APP_ROOT / 'CITATION.cff'
+
+
+@lru_cache(maxsize=1)
+def get_app_version():
+    if not APP_CITATION_PATH.exists():
+        return None
+    with APP_CITATION_PATH.open() as citation_file:
+        return parse_metadata(citation_file.read()).get('version')
 
 
 # Based on escape_fts() from datasette.
@@ -315,6 +329,7 @@ def extra_template_vars(datasette, request):
 
     return {
         "args": request.args,
+        "app_version": get_app_version(),
         "execute_search_query": execute_search_query,
         "get_interlinear": get_interlinear,
         "get_search_params_display": get_search_params_display,
