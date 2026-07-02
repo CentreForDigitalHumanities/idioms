@@ -24,6 +24,7 @@ COPY requirements.txt requirements-prod.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY --from=db-build --chown=app:app /app/idioms.db ./idioms.db
+COPY --chown=app:app CITATION.cff ./
 COPY --chown=app:app metadata.json ./
 COPY --chown=app:app plugins ./plugins
 COPY --chown=app:app static ./static
