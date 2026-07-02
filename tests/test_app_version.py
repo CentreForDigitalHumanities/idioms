@@ -29,7 +29,7 @@ def test_extra_template_vars_includes_app_version():
     assert Version(str(app_version)) >= Version('0.2.3')
 
 
-def test_footer_displays_app_version_after_source_code():
+def test_footer_displays_app_version():
     env = Environment(loader=FileSystemLoader(APP_ROOT / 'templates'))
     rendered = env.get_template('_footer.html').render(app_version='0.2.3')
 
