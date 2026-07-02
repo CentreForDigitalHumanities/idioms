@@ -4,7 +4,7 @@ from pathlib import Path
 import re
 
 from datasette import hookimpl
-from datasette.utils import parse_metadata, sqlite3
+from datasette.utils import BadMetadataError, parse_metadata, sqlite3
 
 
 APP_ROOT = Path(__file__).resolve().parents[1]
@@ -13,10 +13,14 @@ APP_CITATION_PATH = APP_ROOT / 'CITATION.cff'
 
 @lru_cache(maxsize=1)
 def get_app_version():
-    if not APP_CITATION_PATH.exists():
+    try:
+        with APP_CITATION_PATH.open() as citation_file:
+            metadata = parse_metadata(citation_file.read())
+    except (BadMetadataError, OSError, UnicodeDecodeError):
         return None
-    with APP_CITATION_PATH.open() as citation_file:
-        return parse_metadata(citation_file.read()).get('version')
+    if not isinstance(metadata, dict):
+        return None
+    return metadata.get('version')
 
 
 # Based on escape_fts() from datasette.
