@@ -39,13 +39,11 @@ Alternatively, download [idioms.db](https://dutchdialectidioms.uu.nl/idioms.db) 
 The repository includes a multi-stage `Containerfile` (compatible with Docker) for building either a local image with the base dependencies from `requirements.txt`, or a production image that adds `requirements-prod.txt`.
 During the image build, `scripts/create-db.py` is run against the tracked `data/` sources so `idioms.db` is generated inside the build and baked into the final image.
 
-Build the local or production image with Podman or Docker (substitute `podman` with `docker`):
+Build the local image with Podman or Docker (substitute `podman` with `docker`):
 
 ```sh
 # Local
 podman build --target local -t idioms:local -f Containerfile .
-# Production
-podman build --target prod -t idioms:prod -f Containerfile .
 ```
 
 Run the app:
@@ -55,6 +53,17 @@ podman run --rm -p 8001:8001 idioms:local
 ```
 
 The app will be available at <http://127.0.0.1:8001/>.
+
+## Development
+
+```sh
+# Upgrade dependencies
+uv pip compile --universal --upgrade --python-version 3.14 requirements.in --output-file=requirements.txt
+uv pip compile --universal --upgrade --python-version 3.14 requirements-prod.in --output-file requirements-prod.txt
+# Test the prod image locally:
+podman build --target prod -t idioms:prod -f Containerfile .
+podman run --rm --name idioms --env-file ./env.prod -p 8001:8001 -u 1000:0 idioms:prod
+```
 
 ## License
 
