@@ -65,6 +65,15 @@ podman build --target prod -t idioms:prod -f Containerfile .
 podman run --rm --name idioms --env-file ./env.prod -p 8001:8001 -u 1000:0 idioms:prod
 ```
 
+### Release
+
+Before creating a new version tag, bump the app version in `CITATION.cff`.
+
+To update the dataset version, update the following values:
+- The `version` field in `metadata.json`.
+- The `version` and `date-released` field in `data/CITATION.cff`
+- The `version` and `date-released` field of the referenced dataset in the main `CITATION.cff`.
+
 ## License
 
 The data are licensed under the [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
