@@ -26,8 +26,8 @@ keywords:
   - linguistics
   - baked data
 license: BSD-3-Clause
-version: 0.2.3
-date-released: '2023-03-22'
+version: 0.2.4
+date-released: '2026-09-24'
 references:
   - title: Database of Dutch Dialect Idioms
     type: database
